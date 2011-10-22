@@ -11,3 +11,21 @@ Prerequisites
 - Python Imaging Library (PIL, http://www.pythonware.com/products/pil/)
 
 
+
+
+
+
+============
+Testing sets
+============
+The test directory contains three directories with images having the following properties
+
+img_set_0 : Uniform square images (icons) where the largest image is 128X128
+            This will lock the width because width and height are equal.
+
+img_set_1 : A large 980x282 banner and the images from img_set_0
+            This will lock the width because its larger than any image height.
+
+img_set_2 : A large 320x600 banner and the images from img_set_0
+            This will lock the height because its larger than any image width.
+
