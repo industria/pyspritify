@@ -1,0 +1,13 @@
+PySpritify
+
+Python script for creating a sprint and a CSS file from a directory containing images.
+
+
+=============
+Prerequisites
+=============
+
+- Python version 2.7.1 (only tested on this version and might run on earlier versions)
+- Python Imaging Library (PIL, http://www.pythonware.com/products/pil/)
+
+
