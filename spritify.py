@@ -23,6 +23,8 @@ class SpritifyConfiguration(object):
         self.stop = None
         self.cssfilename = None
         self.cssClassname = None
+        self.cssimagepath = None
+        self.spriteFilename = None
         self.imagefiles = None
         parser = self._setupOptionParser()
         self._parseArguments(parser)
@@ -39,18 +41,11 @@ class SpritifyConfiguration(object):
                          If the directory isn't supplied the current directory will be used."""
         parser = OptionParser(usage = usage, version=version, description=description)
         parser.add_option("-v", "--verbose", action="store_true", default=False, dest="verbose", help="Verbose output during sprite and CSS generation.")
-        parser.add_option("-s", "--stop", action="store_true", default=False, dest="stop", help="Stop if PIL fails to open an image file, normal operation is simply skipping files that can't be opened.")
+        parser.add_option("-f", "--stop", action="store_true", default=False, dest="stop", help="Stop if PIL fails to open an image file, normal operation is simply skipping files that can't be opened.")
         parser.add_option("-c", "--css", dest="css", default="sprite.css", help="Name of the CSS file. (Default: sprite.css)")
         parser.add_option("-n", "--classname", dest="classname", default=".sprite", help="Name of the CSS class defining the background url. (Default: .sprite)")
-
-        #    op.add_option("-c", "--file", dest="file", help="Configuration file with appid, appkey and host")
-        #    op.add_option("-i", "--appid", dest="appid", help="Override application id in configuration file")
-        #    op.add_option("-k", "--appkey", dest="appkey", help="Override application key in configuration file")
-        #    op.add_option("-d", "--host", dest="host", help="Override userservice host in configuration file")
-        #    op.add_option("-p", "--prop", action="store_true", default=False, dest="prop", help="Get user properties for username")
-        #    op.add_option("-b", "--branding", dest="branding", help="Branding to use when activating reset.")
-        #    op.add_option("-u", "--user", dest="user", help="Python dict representation of a user (parsed using eval()).")
-        #    op.add_option("", "--delete", action="store_true", default=False, dest="delete", help="Delete the user. NOTE: this doesn't ask twice.")
+        parser.add_option("-p", "--cssimagepath", dest="cssimagepath", default="", help="Path to prefix the sprite name with in the background-image url. Should be used if the sprite and CSS files are not written to the same directory.")
+        parser.add_option("-s", "--sprite", dest="sprite", default="sprite.png", help="Name of the sprite file. (Default: sprite.png)")
         return parser
 
     def _parseArguments(self, parser):
@@ -64,6 +59,8 @@ class SpritifyConfiguration(object):
         self.stop = options.stop
         self.cssfilename = os.path.abspath(os.path.expanduser(options.css))
         self.cssClassname = options.classname
+        self.cssimagepath = options.cssimagepath
+        self.spriteFilename = os.path.abspath(os.path.expanduser(options.sprite))
         # Directory will be current working directory unless a positional argument is
         # supplied on the command line. If the argument isn't a directory it's considered
         # a parse error.
@@ -223,7 +220,7 @@ class Spritify(object):
         for node in layout.nodes():
             sprint.paste(node.item._image, (node.x, node.y))
             print node
-        sprint.save("sprite.png", "PNG")
+        sprint.save(self.__conf.spriteFilename, "PNG")
 
 
     def _spriteClassFromNode(self, node):
@@ -243,12 +240,11 @@ class Spritify(object):
         """
         Write the CSS for the layout.
         """
-        sprite_file_name = "sprite.png"
-        print "CSS: " , self.__conf.cssfilename
         css = open(self.__conf.cssfilename, "w")
         # Register the image as background:url
-        css.write(str.format("{0} {{background:url({1});}}\n",  self.__conf.cssClassname, sprite_file_name))
-        # Register the images as classes by there names
+        url = self.__conf.cssimagepath + os.path.basename(self.__conf.spriteFilename)
+        css.write(str.format("{0} {{background-image: url(\"{1}\");}}\n",  self.__conf.cssClassname, url))
+        # Register the images as classes by there filenames
         for node in layout.nodes():
             name = self._spriteClassFromNode(node)
             css.write(str.format(".{0} {{", name))
@@ -257,8 +253,10 @@ class Spritify(object):
             css.write("}\n");
         css.close()
 
-
     def generate(self):
+        """
+        Generate the sprite and CSS file
+        """
         print "Traverse directory %s for images" % ( self.__conf.directory)
         print "Verbose output:", self.__conf.verbose
 
