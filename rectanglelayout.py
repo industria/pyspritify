@@ -19,7 +19,7 @@ class RectangleLayoutError(Exception):
 
 class Node(object):
     """
-    Repsesents a node in the layout tree.
+    Represents a node in the layout tree.
     The node has information about placement, x and y, 
     extent, width and height, and whether the node
     is allocated, plus an item property which can be used
@@ -155,6 +155,28 @@ class Layout(object):
 
     def prune(self):
         """
-        Prune the tree by removing all unallocated nodes.
+        Prune the layout tree by removing all unallocated nodes.
         """
         self.__prune_traverse(self._root)
+
+
+    def __bounding_traverse(self, node, width, height):
+        """
+        Traverse the layout tree calculating the bounding box.
+        """
+        max_width = width
+        max_height = height
+        if(not node is None):
+            (max_width_left, max_height_left) = self.__bounding_traverse(node.left, max_width, max_height)
+            (max_width_right, max_height_right) = self.__bounding_traverse(node.right, max_width, max_height)
+            max_width = max(max_width, max_width_left, max_width_right, node.x + node.width)
+            max_height = max(max_height, max_height_left, max_height_right, node.y + node.height)
+        return (max_width, max_height)
+
+    def bounding(self):
+        """
+        Return the width and height of the layouts bounding rectangle.
+        Its returned as a 2-tuple (width, height).
+        """
+        (width, height) = self.__bounding_traverse(self._root, 0, 0)
+        return (width, height)

@@ -19,13 +19,10 @@ class TestLayout(unittest.TestCase):
         layout = Layout(root)
         self.assertRaises(RectangleLayoutError, layout.insert, 12, 12, "fail")
 
-
-
     def test_layout_locked_width(self):
         root = Node(0, 0, 12, sys.maxint)
 
         layout = Layout(root)
-
         layout.insert(12, 2, 1)
         layout.insert(10, 4, 2)
         layout.insert(10, 2, 3)
@@ -42,7 +39,9 @@ class TestLayout(unittest.TestCase):
         layout.insert(2, 2, 14)
         
         layout.prune()
-
+        (width, height) = layout.bounding()
+        self.assertEqual(12, width)
+        self.assertEqual(22, height)
 
 if __name__ == '__main__':
     unittest.main()
