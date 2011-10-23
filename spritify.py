@@ -166,16 +166,16 @@ class Spritify(object):
         images : List of SpriteImages to the virtual sprite size from.
         return: (width, height)
         """
-        maximum_width = 0
-        maximum_height = 0
+        width = 0
+        height = 0
         for image in images:
-            maximum_width = max(maximum_width, image.width)
-            maximum_height = max(maximum_height, image.height)
-        if(maximum_width < maximum_height):
-            maximum_width = sys.maxint
+            width = max(width, image.width)
+            height = max(height, image.height)
+        if(width < height):
+            width = sys.maxint
         else:
-            maximum_height = sys.maxint
-        return (maximum_width, maximum_height)
+            height = sys.maxint
+        return (width, height)
 
 
     def _sortSpriteImages(self, images, width, height):
