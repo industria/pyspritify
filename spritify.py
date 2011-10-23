@@ -3,6 +3,7 @@ from optparse import OptionParser
 import os
 import os.path
 import re
+import string
 import sys
 from PIL import Image
 from rectanglelayout import Layout
@@ -240,20 +241,18 @@ class Spritify(object):
         """
         sprite_class_name = "sprite"
         sprite_file_name = "sprite.png"
-        css_filename = self.__conf.cssfilename
-        print "CSS: " , css_filename
-
-        css = open(css_filename, "w")
-
+        print "CSS: " , self.__conf.cssfilename
+        css = open(self.__conf.cssfilename, "w")
         # Register the image as background:url
-        print >> css, ".%s {background:url(%s);}" % (sprite_class_name, sprite_file_name)
+        css.write(str.format(".{0} {{background:url({1});}}\n", sprite_class_name, sprite_file_name))
         # Register the images as classes by there names
         for node in layout.nodes():
-            cssClassName = self._spriteClassFromNode(node)
-            print >> css, ".%s {width: %spx; height: %spx; background-position: %spx %spx }" % (cssClassName, node.width, node.height, 0 - node.x, 0 - node.y)
-
+            name = self._spriteClassFromNode(node)
+            css.write(str.format(".{0} {{", name))
+            css.write(str.format("width: {0}px; height: {1}px; ", node.width, node.height))
+            css.write(str.format("background-position: {0}px {1}px;", 0 - node.x, 0 - node.y))
+            css.write("}\n");
         css.close()
-        pass
 
 
     def generate(self):
