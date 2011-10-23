@@ -108,14 +108,12 @@ class SpriteImage(object):
         self._image = image
         (self.width, self.height) = self._image.size
         self.filename = filename
-        self.x = 0
-        self.y = 0
 
     def __str__(self):
         """
         String representation of a SprintImage.
         """
-        return "%s (%s, %s) width=%s height=%s" % (self.filename, self.x, self.y, self.width, self.height)
+        return "%s width=%s height=%s" % (self.filename, self.width, self.height)
 
 
 class Spritify(object):
