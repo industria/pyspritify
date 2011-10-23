@@ -20,6 +20,7 @@ class SpritifyConfiguration(object):
         self.directory = None
         self.verbose = None
         self.stop = None
+        self.cssfilename = None
         self.imagefiles = None
         parser = self._setupOptionParser()
         self._parseArguments(parser)
@@ -37,7 +38,7 @@ class SpritifyConfiguration(object):
         parser = OptionParser(usage = usage, version=version, description=description)
         parser.add_option("-v", "--verbose", action="store_true", default=False, dest="verbose", help="Verbose output during sprite and CSS generation.")
         parser.add_option("-s", "--stop", action="store_true", default=False, dest="stop", help="Stop if PIL fails to open an image file, normal operation is simply skipping files that can't be opened.")
-
+        parser.add_option("-c", "--css", dest="css", default="sprite.css", help="Name of the CSS file. (Default: sprite.css)")
         #    op.add_option("-c", "--file", dest="file", help="Configuration file with appid, appkey and host")
         #    op.add_option("-i", "--appid", dest="appid", help="Override application id in configuration file")
         #    op.add_option("-k", "--appkey", dest="appkey", help="Override application key in configuration file")
@@ -57,6 +58,7 @@ class SpritifyConfiguration(object):
         (options, arguments) = parser.parse_args()
         self.verbose = options.verbose
         self.stop = options.stop
+        self.cssfilename = os.path.abspath(os.path.expanduser(options.css))
         # Directory will be current working directory unless a positional argument is
         # supplied on the command line. If the argument isn't a directory it's considered
         # a parse error.
@@ -238,7 +240,8 @@ class Spritify(object):
         """
         sprite_class_name = "sprite"
         sprite_file_name = "sprite.png"
-        css_filename = "sprite.css"
+        css_filename = self._configuration.cssfilename
+        print "CSS: " , css_filename
 
         css = open(css_filename, "w")
 
