@@ -59,20 +59,20 @@ class Layout(object):
     support methods to calculate the actual area used
     by the rectangles (nodes) placed in the layout.
     """
-    def __init__(self, root):
+    def __init__(self, width, height):
         """
-        Initialize the layout with a root node representing
+        Initialize the layout with a width and height representing
         the initial free space the following rectangles should
-        fit with in.
+        fit within.
         """
-        self._root = root
+        self._root = Node(0, 0, width, height)
         self._free_node = None
 
     def __traverse(self, node, width, height):
         """
         Traverse the tree for first usable node
         that is not allocated and will fit the
-        rectangle, width and height.
+        recgtangle, width and height.
         """
         if((not node is None) and (self._free_node is None)):
             self.__traverse(node.left, width, height)

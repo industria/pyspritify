@@ -2,7 +2,6 @@ import unittest
 
 import sys
 
-from rectanglelayout import Node
 from rectanglelayout import Layout
 from rectanglelayout import RectangleLayoutError
 
@@ -15,14 +14,11 @@ class TestLayout(unittest.TestCase):
 
 
     def test_layout_raises_out_of_space(self):
-        root = Node(0, 0, 10, 10)
-        layout = Layout(root)
+        layout = Layout(10, 10)
         self.assertRaises(RectangleLayoutError, layout.insert, 12, 12, "fail")
 
     def test_layout_locked_width(self):
-        root = Node(0, 0, 12, sys.maxint)
-
-        layout = Layout(root)
+        layout = Layout(12, sys.maxint)
         layout.insert(12, 2, 1)
         layout.insert(10, 4, 2)
         layout.insert(10, 2, 3)
