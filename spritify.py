@@ -1,5 +1,6 @@
 import imghdr
 from optparse import OptionParser
+from optparse import OptionGroup
 import os
 import os.path
 import re
@@ -42,10 +43,16 @@ class SpritifyConfiguration(object):
         parser = OptionParser(usage = usage, version=version, description=description)
         parser.add_option("-v", "--verbose", action="store_true", default=False, dest="verbose", help="Verbose output during sprite and CSS generation.")
         parser.add_option("-f", "--stop", action="store_true", default=False, dest="stop", help="Stop if PIL fails to open an image file, normal operation is simply skipping files that can't be opened.")
-        parser.add_option("-c", "--css", dest="css", default="sprite.css", help="Name of the CSS file. (Default: sprite.css)")
-        parser.add_option("-n", "--classname", dest="classname", default=".sprite", help="Name of the CSS class defining the background url. (Default: .sprite)")
-        parser.add_option("-p", "--cssimagepath", dest="cssimagepath", default="", help="Path to prefix the sprite name with in the background-image url. Should be used if the sprite and CSS files are not written to the same directory.")
-        parser.add_option("-s", "--sprite", dest="sprite", default="sprite.png", help="Name of the sprite file. (Default: sprite.png)")
+        # Group for CSS options
+        cssGroup = OptionGroup(parser, "CSS options")
+        cssGroup.add_option("-c", "--css", dest="css", default="sprite.css", help="Name of the CSS file. (Default: sprite.css)")
+        cssGroup.add_option("-n", "--classname", dest="classname", default=".sprite", help="Name of the CSS class defining the background url. (Default: .sprite)")
+        cssGroup.add_option("-p", "--cssimagepath", dest="cssimagepath", default="", help="Path to prefix the sprite name with in the background-image url. Should be used if the sprite and CSS files are not written to the same directory.")
+        parser.add_option_group(cssGroup)
+        # Group for sprite options
+        spriteGroup = OptionGroup(parser, "Sprite options")
+        spriteGroup.add_option("-s", "--sprite", dest="sprite", default="sprite.png", help="Name of the sprite file. (Default: sprite.png)")
+        parser.add_option_group(spriteGroup)
         return parser
 
     def _parseArguments(self, parser):
