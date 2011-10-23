@@ -126,7 +126,7 @@ class Spritify(object):
         """
         Create a Spritify object with using a SpritifyConfiguration.
         """
-        self._configuration = configuration
+        self.__conf = configuration
         pass
 
     def _buildImageList(self, imagefilenames):
@@ -140,7 +140,7 @@ class Spritify(object):
                 sprite_image = SpriteImage(img, f)
                 sprite_images.append(sprite_image)
             except IOError as ioe:
-                if self._configuration.stop:
+                if self.__conf.stop:
                     print "Error: PIL failed to open [%s], with %s" % (f, ioe)
                     sys.exit(1);
                 else:
@@ -240,7 +240,7 @@ class Spritify(object):
         """
         sprite_class_name = "sprite"
         sprite_file_name = "sprite.png"
-        css_filename = self._configuration.cssfilename
+        css_filename = self.__conf.cssfilename
         print "CSS: " , css_filename
 
         css = open(css_filename, "w")
@@ -257,10 +257,10 @@ class Spritify(object):
 
 
     def generate(self):
-        print "Traverse directory %s for images" % ( self._configuration.directory)
-        print "Verbose output:", self._configuration.verbose
+        print "Traverse directory %s for images" % ( self.__conf.directory)
+        print "Verbose output:", self.__conf.verbose
 
-        sprite_images = self._buildImageList(self._configuration.imagefiles)
+        sprite_images = self._buildImageList(self.__conf.imagefiles)
         layout = self._layoutSprintImages(sprite_images)        
         self._drawLayout(layout)
         self._writeCSS(layout)
