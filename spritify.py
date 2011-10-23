@@ -212,7 +212,22 @@ class Spritify(object):
         for image in sorted_images:
             layout.insert(image.width, image.height, image)
         layout.prune()
-        print layout.bounding()
+        return layout
+        (actual_width, actial_height) = layout.bounding()
+
+
+    def _drawLayout(self, layout):
+        """
+        Draw an image from the layout.
+        """
+        (image_width, image_height) = layout.bounding()
+        print "Draw image: ", image_width, image_height
+        sprint = Image.new("RGBA", (image_width, image_height))
+        
+        for node in layout.nodes():
+            sprint.paste(node.item._image, (node.x, node.y))
+            print node
+        sprint.save("sprint.png", "PNG")
 
 
     def generate(self):
@@ -220,8 +235,8 @@ class Spritify(object):
         print "Verbose output:", self._configuration.verbose
 
         sprite_images = self._buildImageList(self._configuration.imagefiles)
-        self._layoutSprintImages(sprite_images)        
-
+        layout = self._layoutSprintImages(sprite_images)        
+        self._drawLayout(layout)
 
 
 if __name__ == '__main__':
