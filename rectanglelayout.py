@@ -1,5 +1,4 @@
 
-
 class RectangleLayoutError(Exception):
     """
     Error raised when the rectangle layout fails.
@@ -15,6 +14,12 @@ class RectangleLayoutError(Exception):
         String representation of the layout error.
         """
         return repr(self.value)
+
+class PartitioningDirection(object):
+    """
+    Represents partitioning directions.
+    """
+    X, Y = range(2)
 
 
 class Node(object):
@@ -63,10 +68,27 @@ class Layout(object):
         """
         Initialize the layout with a width and height representing
         the initial free space the following rectangles should
-        fit within.
+        fit within. If one of the directions should be open-ended
+        set the size of the dimension to sys.maxint or a similar
+        large value that will not be exhausted. Take care not setting
+        both directions to open-ended because the rectangles added will
+        end up in a single row or column so one direction should be locked.
         """
         self._root = Node(0, 0, width, height)
+        self._partitioning = self.__selectPartitioning(width, height)
         self._free_node = None
+
+    def __selectPartitioning(self, width, height):
+        """
+        Select the partitioning direction to used based on
+        the width and height the layout was initialized with.
+        Directions the larger direction will determine the
+        partitioning used and if equal the Y direction is used.
+        """
+        if(width > height):
+            return PartitioningDirection.X
+        else:
+            return PartitioningDirection.Y
 
     def __traverse(self, node, width, height):
         """
@@ -109,24 +131,44 @@ class Layout(object):
         node = self.__findFreeSpace(width, height)
         if(node is None):
             raise RectangleLayoutError("No free space left in the layout")
+        print "Allocate from", node
         # Place the rectangle into the layout.
-        # Calculate free space area below the rectangle.
-        x_below = node.x
-        y_below = node.y + height
-        width_below = node.width
-        height_below = node.height - height
-        node_below = Node(x_below, y_below, width_below, height_below)
-        # Calculate free space area beside the rectangle
-        x_beside = node.x + width
-        y_beside = node.y
-        width_beside = node.width - width
-        height_beside = height
-        node_beside = Node(x_beside, y_beside, width_beside, height_beside)
+        if(PartitioningDirection.Y == self._partitioning):
+            # started with a height larger than the width
+            # Calculate free space area below the rectangle.
+            x_below = node.x
+            y_below = node.y + height
+            width_below = node.width
+            height_below = node.height - height
+            node_below = Node(x_below, y_below, width_below, height_below)
+            # Calculate free space area beside the rectangle 
+            x_beside = node.x + width
+            y_beside = node.y
+            width_beside = node.width - width
+            height_beside = height
+            node_beside = Node(x_beside, y_beside, width_beside, height_beside)
+        elif(PartitioningDirection.X == self._partitioning):
+            # Started with a width larger than the width
+            # Calculate free space area beside the rectangle 
+            x_beside = node.x + width
+            y_beside = node.y
+            width_beside = node.width - width
+            height_beside = node.height
+            node_beside = Node(x_beside, y_beside, width_beside, height_beside)
+            # Calculate free space area below the rectangle.
+            x_below = node.x
+            y_below = node.y + height
+            width_below = width
+            height_below = node.height - height
+            node_below = Node(x_below, y_below, width_below, height_below)
+        else:
+            raise RectangleLayoutError("Unknown partitioning direction")
         # Allocate the rectangle in the node
         node.allocated = True
         node.item = item
         node.width = width
         node.height = height
+        print "After allocation", node
         # Place the smallest free space area to the left in the tree
         if(node_below.area < node_beside.area):
             node.left = node_below
@@ -140,6 +182,10 @@ class Layout(object):
             node.left = None
         if(0 >= node.right.area):
             node.right = None
+        print "Left:", node.left
+        print "Right:", node.right
+        print "-----------------------------------------------"
+
 
     def __prune_traverse(self, node):
         """

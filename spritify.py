@@ -5,6 +5,10 @@ import os.path
 import sys
 from PIL import Image
 
+from rectanglelayout import Layout
+from rectanglelayout import RectangleLayoutError
+
+
 class SpritifyConfiguration(object):
     """
     Create a configuration for running the spritification from the command line arguments supplied.
@@ -393,13 +397,12 @@ class Spritify(object):
         """
         (vwidth, vheight) = self._virtualSpriteSize(images)
         print "Virtual sprite size %s x %s" % (vwidth, vheight)
-        layout = SpriteLayout(vwidth, vheight)
+        layout = Layout(vwidth, vheight)
         sorted_images = self._sortSpriteImages(images, vwidth, vheight)
         for image in sorted_images:
-            layout.insert(image)
-            print "Got position: %s" % (image)
-        (width, height) = self._spriteSize(layout)
-        print "Actual sprite size %s x %s" % (width, height)
+            layout.insert(image.width, image.height, image)
+        layout.prune()
+        print layout.bounding()
 
 
     def generate(self):
