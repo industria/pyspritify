@@ -38,6 +38,12 @@ class TestLayout(unittest.TestCase):
         (width, height) = layout.bounding()
         self.assertEqual(12, width)
         self.assertEqual(22, height)
+        
+        node_count = 0
+        for node in layout.nodes():
+            node_count = node_count + 1
+        self.assertEqual(14, node_count)
+
 
 if __name__ == '__main__':
     unittest.main()

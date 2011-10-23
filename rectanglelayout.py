@@ -77,6 +77,7 @@ class Layout(object):
         self._root = Node(0, 0, width, height)
         self._partitioning = self.__selectPartitioning(width, height)
         self._free_node = None
+        self._allocated = []
 
     def __selectPartitioning(self, width, height):
         """
@@ -168,6 +169,8 @@ class Layout(object):
         node.item = item
         node.width = width
         node.height = height
+        # Add the allocated node to the allocated list
+        self._allocated.append(node)
         print "After allocation", node
         # Place the smallest free space area to the left in the tree
         if(node_below.area < node_beside.area):
@@ -226,3 +229,13 @@ class Layout(object):
         """
         (width, height) = self.__bounding_traverse(self._root, 0, 0)
         return (width, height)
+
+
+    def nodes(self):
+        """
+        Generator function for nodes in the layout.
+        """
+        for node in self._allocated:
+            yield node
+
+            
