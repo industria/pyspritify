@@ -127,184 +127,6 @@ class SpriteImage(object):
         self.y = y
 
 
-class SpriteLayoutNode(object):
-    """
-    Node in the sprite layout tree.
-    """
-    def __init__(self, x, y, width, height):
-        """
-        Initialize a SpriteLayoutNode.
-        """
-        self.x = x
-        self.y = y
-        self.width = width
-        self.height = height
-        self.image = None
-        self.left = None
-        self.right = None
-
-    def __str__(self):
-        """
-        String representation of a SpriteLayoutNode.
-        """
-        return "(%s, %s) w=%s h=%s" % (self.x, self.y, self.width, self.height)
-
-
-    def canContainImage(self, image):
-        """
-        Check if image image can fit inside the node.
-        It fits if not image is assigned to the node  and the dimensions
-        of the image fits inside the node.
-        """
-        if(not self.image is None):
-            return False;
-        return ((image.width <= self.width) and (image.height <= self.height))
-
-
-class SpriteLayout(object):
-    """
-    Implement the sprite layout algorithm.
-    """
-    def __init__(self, width, height):
-        """
-        Initialize the sprite layout by supplying the width and height
-        of the virtual sprite.
-        """
-        self.tree = SpriteLayoutNode(0, 0, width, height)
-        self._bbox_width = 0
-        self._bbox_height = 0
-
-    def _findLayoutNode(self, node, image):
-        """
-        Find a SpriteLayoutNode that can fit the image.
-        """
-        if(node is None):
-            return None
-
-        if (node.canContainImage(image)):
-            return node
-        else:
-            leftnode = self._findLayoutNode(node.left, image)
-            if(not leftnode is None):
-                return leftnode
-            else:
-                return self._findLayoutNode(node.right, image)
-
-
-    def _areaBelowImage(self, node, image):
-        """
-        Calcualte the area left below the image when the image size
-        has been allocated from the node.
-
-        node  : SpriteLayoutNode the image is allocated from.
-        image : The image to allocate from the node.
-
-        return : SpriteLayoutNode representing the free space below
-                 the allocated image. None if no space is left.
-        """
-        free_area = None
-        x = node.x
-        y = node.y + image.height + 1
-        width = node.width
-        height = node.height - image.height
-        if(0 < height):
-            free_area = SpriteLayoutNode(x, y, width, height)
-        return free_area
-
-    def _areaRightOfImage(self, node, image):
-        """
-        Calculate the area left to the right of the image when the
-        image size has been allocated from the node.
-
-        node  : SpriteLayoutNode the image is allocated from.
-        image : The image to allocate from the node.
-        
-        return : SpriteLayoutNode representing the free space to the
-                 right of the allocated image. None if no space is left.
-        """
-        free_area = None
-        x = node.x + image.width + 1
-        y = node.y
-        width = node.width - image.width
-        height = image.height
-        if(0 < width):
-            free_area = SpriteLayoutNode(x, y, width, height)
-        return free_area
-
-    def insert(self, image):
-        """
-        Insert an image into the SpriteLayout.
-        
-        image : SpriteImage to add to the layout.
-        """
-        freenode = self._findLayoutNode(self.tree, image)
-        if(freenode is None):
-            # No free node was found meaning the image will not
-            # fit into the sprite. This should never happen when
-            # using the open-ended virtual sprite.
-            print "No more space in sprite"
-            sys.exit(1)
-        # Place the image into the free node by assigning the
-        # image reference to the node and setting the free node
-        # upper left corner to the position of the image in the sprite.
-        freenode.image = image
-        image.setPosition(freenode.x, freenode.y)
-        # There will be an area of free space below and to the right
-        # of the image placed in the node.
-        free_area_below = self._areaBelowImage(freenode, image)
-        free_area_right = self._areaRightOfImage(freenode, image)
-        # Place the smalleste area as the left child in the tree.
-        # This is because the traversal always picks the left child 
-        # node first when looking for a free node and allocation should
-        # happen from finit size node before using the open-ended node.
-        if((free_area_below is None) or (free_area_right is None)):
-            # Left or right position doesn't really matter.
-            freenode.left = free_area_below
-            freenode.right = free_area_right
-        else:
-            # Left should be the node with the lowest area
-            area_below = free_area_below.width * free_area_below.height
-            area_right = free_area_right.width * free_area_right.height
-            if(area_below < area_right):
-                freenode.left = free_area_below
-                freenode.right = free_area_right
-            else:
-                freenode.left = free_area_right
-                freenode.right = free_area_below
-
-
-    def _bbox(self, node, width, height):
-        """
-        Bounding box by traversing the layout.
-        width and height are updated during traversal.
-        """
-        if(node is None):
-            return (width, height)
-
-        if(node.image is None):
-            return (width, height)
-
-        width = max(node.x + node.image.width, width)
-        height = max(node.y + node.image.height, height)
-
-        if(not node.left is None):
-            (width, height) = self._bbox(node.left, width, height)
-
-        if(not node.right is None):
-            (width, height) = self._bbox(node.right, width, height)
-        
-        return (width, height)    
-
-
-    def boundingBox(self):
-        """
-        Get the bounding box of the layout.
-        Return a 4-tuple (x, y, width, height)
-        """
-        (width, height) = self._bbox(self.tree, 0, 0)
-        return (0, 0, width, height)
-        
-
 class Spritify(object):
     """
     Spritify a directory of images based on a SpritifyConfiguration.
@@ -373,18 +195,6 @@ class Spritify(object):
             key_function = lambda sprite_image: sprite_image.height
         return sorted(images, reverse = True, key = key_function);
 
-    def _spriteSize(self, layout):
-        """
-        Calculate the actual sprite size needed for the layout.
-
-        layout: SpriteLayout with all images assigned.
-
-        Return size of the sprite as a 2-tuple (width, height)
-        """
-        (x, y, width, height) = layout.boundingBox()
-        print "Box: ", x, y, width, height
-        return (width, height)
-
 
     def _layoutSprintImages(self, images):
         """
@@ -395,10 +205,10 @@ class Spritify(object):
 
         images: List of SpriteImage objects to layout
         """
-        (vwidth, vheight) = self._virtualSpriteSize(images)
-        print "Virtual sprite size %s x %s" % (vwidth, vheight)
-        layout = Layout(vwidth, vheight)
-        sorted_images = self._sortSpriteImages(images, vwidth, vheight)
+        (width, height) = self._virtualSpriteSize(images)
+        print "Virtual sprite size %s x %s" % (width, height)
+        layout = Layout(width, height)
+        sorted_images = self._sortSpriteImages(images, width, height)
         for image in sorted_images:
             layout.insert(image.width, image.height, image)
         layout.prune()
