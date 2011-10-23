@@ -1,10 +1,11 @@
+from cStringIO import StringIO
 import imghdr
 from optparse import OptionParser
 import os
 import os.path
+import re
 import sys
 from PIL import Image
-
 from rectanglelayout import Layout
 from rectanglelayout import RectangleLayoutError
 
@@ -227,7 +228,42 @@ class Spritify(object):
         for node in layout.nodes():
             sprint.paste(node.item._image, (node.x, node.y))
             print node
-        sprint.save("sprint.png", "PNG")
+        sprint.save("sprite.png", "PNG")
+
+
+    def _spriteClassFromNode(self, node):
+        """
+        Get a sprite class name from a node.
+        """
+        filename = node.item.filename
+        basename = os.path.basename(filename)
+        match = re.search("""^[^\.]+""", basename)
+        if(match is None):
+            return "somedafault"
+        else:
+            return match.group(0)
+
+
+    def _writeCSS(self, layout):
+        """
+        Write the CSS for the layout.
+        """
+        sprite_class_name = "sprite"
+        sprite_file_name = "sprite.png"
+        print "Don't know how to do this yet - writeCSS"
+        css = StringIO()
+
+        # Register the image as background:url
+        print >> css, ".%s {background:url(%s);}" % (sprite_class_name, sprite_file_name)
+        # Register the images as classes by there names
+        for node in layout.nodes():
+            cssClassName = self._spriteClassFromNode(node)
+            print >> css, ".%s" % (cssClassName)
+        print css.getvalue()
+
+        css.close()
+        pass
+
 
 
     def generate(self):
@@ -237,6 +273,7 @@ class Spritify(object):
         sprite_images = self._buildImageList(self._configuration.imagefiles)
         layout = self._layoutSprintImages(sprite_images)        
         self._drawLayout(layout)
+        self._writeCSS(layout)
 
 
 if __name__ == '__main__':
