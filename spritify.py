@@ -1,4 +1,3 @@
-from cStringIO import StringIO
 import imghdr
 from optparse import OptionParser
 import os
@@ -108,7 +107,6 @@ class SpriteImage(object):
         """
         self._image = image
         (self.width, self.height) = self._image.size
-        self.area = self.width * self.height
         self.filename = filename
         self.x = 0
         self.y = 0
@@ -118,14 +116,6 @@ class SpriteImage(object):
         String representation of a SprintImage.
         """
         return "%s (%s, %s) width=%s height=%s" % (self.filename, self.x, self.y, self.width, self.height)
-
-
-    def setPosition(self, x, y):
-        """
-        Set the image sprite position.
-        """
-        self.x = x
-        self.y = y
 
 
 class Spritify(object):
@@ -250,20 +240,19 @@ class Spritify(object):
         """
         sprite_class_name = "sprite"
         sprite_file_name = "sprite.png"
-        print "Don't know how to do this yet - writeCSS"
-        css = StringIO()
+        css_filename = "sprite.css"
+
+        css = open(css_filename, "w")
 
         # Register the image as background:url
         print >> css, ".%s {background:url(%s);}" % (sprite_class_name, sprite_file_name)
         # Register the images as classes by there names
         for node in layout.nodes():
             cssClassName = self._spriteClassFromNode(node)
-            print >> css, ".%s" % (cssClassName)
-        print css.getvalue()
+            print >> css, ".%s {width: %spx; height: %spx; background-position: %spx %spx }" % (cssClassName, node.width, node.height, 0 - node.x, 0 - node.y)
 
         css.close()
         pass
-
 
 
     def generate(self):
