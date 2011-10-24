@@ -156,13 +156,11 @@ class Layout(object):
             y_below = node.y + height
             width_below = node.width
             height_below = node.height - height
-            node_below = Node(x_below, y_below, width_below, height_below)
             # Calculate free space area beside the rectangle 
             x_beside = node.x + width
             y_beside = node.y
             width_beside = node.width - width
             height_beside = height
-            node_beside = Node(x_beside, y_beside, width_beside, height_beside)
         elif(PartitioningDirection.X == self._partitioning):
             # Started with a width larger than the width
             # Calculate free space area beside the rectangle 
@@ -170,15 +168,17 @@ class Layout(object):
             y_beside = node.y
             width_beside = node.width - width
             height_beside = node.height
-            node_beside = Node(x_beside, y_beside, width_beside, height_beside)
             # Calculate free space area below the rectangle.
             x_below = node.x
             y_below = node.y + height
             width_below = width
             height_below = node.height - height
-            node_below = Node(x_below, y_below, width_below, height_below)
         else:
             raise RectangleLayoutError("Unknown partitioning direction")
+        # Create the nodes for the free space below and besides the allocation
+        node_below = Node(x_below, y_below, width_below, height_below)
+        node_beside = Node(x_beside, y_beside, width_beside, height_beside)
+
         # Allocate the rectangle in the node
         node.allocated = True
         node.item = item
