@@ -131,7 +131,46 @@ class Layout(object):
         self.__traverse(self._root, width, height)
         return self._free_node
 
+    def __freeSpaceBelowAllocation(self, node, width, height):
+        """
+        Calculate the free space area left below the rectangle defined
+        by the width and the height when it's allocated from
+        the node. The free space is returned as a node.
+        """
+        x_below = node.x
+        y_below = node.y + height
+        height_below = node.height - height
+        # The width is calculated differently depending on
+        # direction of the open-endedness
+        if(PartitioningDirection.Y == self._partitioning):
+            width_below = node.width
+        elif(PartitioningDirection.X == self._partitioning):
+            width_below = width
+        else:
+            raise RectangleLayoutError("Unknown partitioning direction")
+        return Node(x_below, y_below, width_below, height_below)
 
+
+    def __freeSpaceBesideAllocation(self, node, width, height):
+        """
+        Calculate the free space area left beside the rectangle defined
+        by the width and the height when it's allocated from
+        the node. The free space is returned as a node.
+        """
+        x_beside = node.x + width
+        y_beside = node.y
+        width_beside = node.width - width
+        # The height is calculated differently depending on
+        # direction of the open-endedness
+        if(PartitioningDirection.Y == self._partitioning):
+            height_beside = height
+        elif(PartitioningDirection.X == self._partitioning):
+            height_beside = node.height
+        else:
+            raise RectangleLayoutError("Unknown partitioning direction")
+        return Node(x_beside, y_beside, width_beside, height_beside)
+
+        
     def insert(self, width, height, item):
         """
         Insert a rectangle into the layout by supplying 
@@ -148,37 +187,11 @@ class Layout(object):
         if(node is None):
             raise RectangleLayoutError("No free space left in the layout")
         print "Allocate from", node
-        # Place the rectangle into the layout.
-        if(PartitioningDirection.Y == self._partitioning):
-            # started with a height larger than the width
-            # Calculate free space area below the rectangle.
-            x_below = node.x
-            y_below = node.y + height
-            width_below = node.width
-            height_below = node.height - height
-            # Calculate free space area beside the rectangle 
-            x_beside = node.x + width
-            y_beside = node.y
-            width_beside = node.width - width
-            height_beside = height
-        elif(PartitioningDirection.X == self._partitioning):
-            # Started with a width larger than the width
-            # Calculate free space area beside the rectangle 
-            x_beside = node.x + width
-            y_beside = node.y
-            width_beside = node.width - width
-            height_beside = node.height
-            # Calculate free space area below the rectangle.
-            x_below = node.x
-            y_below = node.y + height
-            width_below = width
-            height_below = node.height - height
-        else:
-            raise RectangleLayoutError("Unknown partitioning direction")
-        # Create the nodes for the free space below and besides the allocation
-        node_below = Node(x_below, y_below, width_below, height_below)
-        node_beside = Node(x_beside, y_beside, width_beside, height_beside)
-
+        # Place the rectangle into the layout starting by calculating
+        # the free space areas that will be left when the rectangle
+        # has been allocated from the node.
+        node_below = self.__freeSpaceBelowAllocation(node, width, height)
+        node_beside = self.__freeSpaceBesideAllocation(node, width, height)
         # Allocate the rectangle in the node
         node.allocated = True
         node.item = item
