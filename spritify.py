@@ -76,14 +76,13 @@ class SpritifyConfiguration(object):
         else:
             arg_dir = os.path.abspath(arguments[0])
         if not os.path.isdir(arg_dir):
-            parser.error("%s is not a directory" % (arg_dir))
+            parser.error(str.format("{0} is not a directory", arg_dir))
         self.directory = arg_dir
         # Check for image files in the directory and fail with parse error if no
         # image files where found in the directory tree.
         self.imagefiles = self._imagefiles(arg_dir)
         if(0 == len(self.imagefiles)):
-            parser.error("Directory %s doesn't contain any image files" % (self.directory))
-        pass
+            parser.error(str.format("No image files found in {0}", self.directory))
 
 
     def _imagefiles(self, directory):
@@ -124,7 +123,7 @@ class SpriteImage(object):
         """
         String representation of a SprintImage.
         """
-        return "%s width=%s height=%s" % (self.filename, self.width, self.height)
+        return str.format("{0} width={1} height={2}", self.filename, self.width, self.height)
 
 
 class Spritify(object):
@@ -150,10 +149,10 @@ class Spritify(object):
                 sprite_images.append(sprite_image)
             except IOError as ioe:
                 if self.__conf.stop:
-                    print "Error: PIL failed to open [%s], with %s" % (f, ioe)
+                    print str.format("Error: PIL failed to open [{0}], with {1}", f, ioe)
                     sys.exit(1);
                 else:
-                    print "Skipping file [%s], PIL error: %s" % (f, ioe)
+                    print str.format("Skipping file [{0}], PIL error: {1}", f, ioe)
         return sprite_images
 
 
@@ -206,7 +205,7 @@ class Spritify(object):
         images: List of SpriteImage objects to layout
         """
         (width, height) = self._virtualSpriteSize(images)
-        print "Virtual sprite size %s x %s" % (width, height)
+        print str.format("Virtual sprite size {0} x {1}", width, height)
         layout = Layout(width, height)
         sorted_images = self._sortSpriteImages(images, width, height)
         for image in sorted_images:
@@ -223,7 +222,6 @@ class Spritify(object):
         (image_width, image_height) = layout.bounding()
         print "Draw image: ", image_width, image_height
         sprint = Image.new("RGBA", (image_width, image_height))
-        
         for node in layout.nodes():
             sprint.paste(node.item._image, (node.x, node.y))
             print node
@@ -264,7 +262,7 @@ class Spritify(object):
         """
         Generate the sprite and CSS file
         """
-        print "Traverse directory %s for images" % ( self.__conf.directory)
+        print str.format("Traverse directory {0} for images", self.__conf.directory)
         print "Verbose output:", self.__conf.verbose
 
         sprite_images = self._buildImageList(self.__conf.imagefiles)
