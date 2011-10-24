@@ -249,6 +249,21 @@ class Spritify(object):
         css.close()
         return cssClasses
 
+    def _writeHtml(self, cssClasses):
+        """
+        Write an overview HTML document referencing all classes added
+        to the CSS file written.
+        """
+        html = open("overview.html", "w")
+        html.write("<!DOCTYPE html><html><head><meta charset=\"utf-8\">")
+        html.write(str.format("<link rel=\"stylesheet\" type=\"text/css\" href=\"{0}\" />", self.__conf.cssfilename))
+        html.write("</head><body>")
+        for cssClass in cssClasses:
+            html.write(str.format("<div class=\"{0} {1}\"></div>\n", self.__conf.cssClassname, cssClass))
+        html.write("""</body></html>""")
+        html.close()
+
+
     def generate(self):
         """
         Generate the sprite and CSS file
@@ -261,7 +276,7 @@ class Spritify(object):
         self._drawLayout(layout)
         cssClasses = self._writeCSS(layout)
         print "Classes in the CSS", cssClasses
-
+        self._writeHtml(cssClasses)
 
 if __name__ == '__main__':
     conf = SpritifyConfiguration()
