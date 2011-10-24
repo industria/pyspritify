@@ -231,20 +231,23 @@ class Spritify(object):
 
     def _writeCSS(self, layout):
         """
-        Write the CSS for the layout.
+        Write CSS for the layout returning a list of classes in the file.
         """
         css = open(self.__conf.cssfilename, "w")
         # Register the image as background:url
         url = self.__conf.cssimagepath + os.path.basename(self.__conf.spriteFilename)
         css.write(str.format("{0} {{background-image: url(\"{1}\");}}\n",  self.__conf.cssClassname, url))
         # Register the images as classes by there filenames
+        cssClasses = []
         for node in layout.nodes():
             name = self._spriteClassFromNode(node)
+            cssClasses.append(name)
             css.write(str.format(".{0} {{", name))
             css.write(str.format("width: {0}px; height: {1}px; ", node.width, node.height))
             css.write(str.format("background-position: {0}px {1}px;", 0 - node.x, 0 - node.y))
             css.write("}\n");
         css.close()
+        return cssClasses
 
     def generate(self):
         """
@@ -256,7 +259,8 @@ class Spritify(object):
         sprite_images = self._buildImageList(self.__conf.imagefiles)
         layout = self._layoutSprintImages(sprite_images)        
         self._drawLayout(layout)
-        self._writeCSS(layout)
+        cssClasses = self._writeCSS(layout)
+        print "Classes in the CSS", cssClasses
 
 
 if __name__ == '__main__':
