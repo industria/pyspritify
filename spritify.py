@@ -221,11 +221,11 @@ class Spritify(object):
         """
         (image_width, image_height) = layout.bounding()
         print "Draw image: ", image_width, image_height
-        sprint = Image.new("RGBA", (image_width, image_height))
+        sprite = Image.new("RGBA", (image_width, image_height))
         for node in layout.nodes():
-            sprint.paste(node.item._image, (node.x, node.y))
+            sprite.paste(node.item._image, (node.x, node.y))
             print node
-        sprint.save(self.__conf.spriteFilename, "PNG")
+        sprite.save(self.__conf.spriteFilename, "PNG")
 
 
     def _spriteClassFromNode(self, node):
