@@ -110,13 +110,11 @@ class SpriteImage(object):
     """
     def __init__(self, image, filename):
         """
-        Initialize a SpriteImage object.
-
-        image : PIL image.
-        filename : Full path filename to the image.
+        Initialize a SpriteImage with a PIL image and
+        the full path filename of the PIL image.
         """
-        self._image = image
-        (self.width, self.height) = self._image.size
+        self.image = image
+        (self.width, self.height) = self.image.size
         self.filename = filename
 
     def __str__(self):
@@ -159,10 +157,8 @@ class Spritify(object):
     def _virtualSpriteSize(self, images):
         """
         Find the virtual sprite size, which is a sprite where either 
-        width or height is unlimited (that is sys.maxint) depending 
-        on with dimension has the largest size among the images.
-
-        images : List of SpriteImages to the virtual sprite size from.
+        width or height is open-ended (sys.maxint) depending on
+        which dimension has the largest size among the images.
         return: (width, height)
         """
         width = 0
@@ -181,12 +177,6 @@ class Spritify(object):
         """
         Sort the sprite images according the the fixed dimension of the virtual
         sprite size, which is basically the smallest dimension. 
-
-        images: List of SpriteImage objects to be sorted
-        width: Virtual sprite width
-        height: Virtual sprite height
-
-        Return list of images sorted according to the dimensions of the virtual sprite size.
         """
         if (width < height):
             key_function =  lambda sprite_image: sprite_image.width
@@ -201,8 +191,6 @@ class Spritify(object):
         depending on which is largest the other dimension will de unlimited in size
         and the final height and width of the sprite will be determined when the layout
         is complete. 
-
-        images: List of SpriteImage objects to layout
         """
         (width, height) = self._virtualSpriteSize(images)
         print str.format("Virtual sprite size {0} x {1}", width, height)
@@ -217,13 +205,13 @@ class Spritify(object):
 
     def _drawLayout(self, layout):
         """
-        Draw an image from the layout.
+        Draw an image, the sprite, from a layout.
         """
         (image_width, image_height) = layout.bounding()
         print "Draw image: ", image_width, image_height
         sprite = Image.new("RGBA", (image_width, image_height))
         for node in layout.nodes():
-            sprite.paste(node.item._image, (node.x, node.y))
+            sprite.paste(node.item.image, (node.x, node.y))
             print node
         sprite.save(self.__conf.spriteFilename, "PNG")
 
