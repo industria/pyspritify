@@ -46,7 +46,7 @@ class SpritifyConfiguration(object):
         # Group for CSS options
         cssGroup = OptionGroup(parser, "CSS options")
         cssGroup.add_option("-c", "--css", dest="css", default="sprite.css", help="Name of the CSS file. (Default: sprite.css)")
-        cssGroup.add_option("-n", "--classname", dest="classname", default=".sprite", help="Name of the CSS class defining the background url. (Default: .sprite)")
+        cssGroup.add_option("-n", "--classname", dest="classname", default="sprite", help="Name of the CSS class defining the background url. Don't prefix the classname with a period that is done by the CSS writer. (Default: sprite)")
         cssGroup.add_option("-p", "--cssimagepath", dest="cssimagepath", default="", help="Path to prefix the sprite name with in the background-image url. Should be used if the sprite and CSS files are not written to the same directory.")
         parser.add_option_group(cssGroup)
         # Group for sprite options
@@ -236,7 +236,7 @@ class Spritify(object):
         css = open(self.__conf.cssfilename, "w")
         # Register the image as background:url
         url = self.__conf.cssimagepath + os.path.basename(self.__conf.spriteFilename)
-        css.write(str.format("{0} {{background-image: url(\"{1}\");}}\n",  self.__conf.cssClassname, url))
+        css.write(str.format(".{0} {{background-image: url(\"{1}\");}}\n",  self.__conf.cssClassname, url))
         # Register the images as classes by there filenames
         cssClasses = []
         for node in layout.nodes():
