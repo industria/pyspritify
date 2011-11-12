@@ -27,7 +27,8 @@ python spritify.py --help
 
 Usage: spritify.py [options] directory
 
-Create a sprint and a corresponding CSS file from images in the directory argument. If the directory isn't supplied the current directory will be used.
+Create a sprint and a corresponding CSS file from images in the directory
+argument. If the directory isn't supplied the current directory will be used.
 
 Options:
   --version             show program's version number and exit
@@ -36,6 +37,9 @@ Options:
   -f, --stop            Stop if PIL fails to open an image file, normal
                         operation is simply skipping files that can't be
                         opened.
+  -o, --nooverview      HTML overview file will be created if this option is
+                        set. The file is named overview.html and written in
+                        current directory.
 
   CSS options:
     -c CSS, --css=CSS   Name of the CSS file. (Default: sprite.css)
@@ -51,7 +55,6 @@ Options:
   Sprite options:
     -s SPRITE, --sprite=SPRITE
                         Name of the sprite file. (Default: sprite.png)
-
 
 ============
 Testing sets

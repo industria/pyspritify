@@ -22,6 +22,7 @@ class SpritifyConfiguration(object):
         self.directory = None
         self.verbose = None
         self.stop = None
+        self.writeHtmlOverview = None
         self.cssfilename = None
         self.cssClassname = None
         self.cssimagepath = None
@@ -42,6 +43,7 @@ class SpritifyConfiguration(object):
         parser = OptionParser(usage = usage, version=version, description=description)
         parser.add_option("-v", "--verbose", action="store_true", default=False, dest="verbose", help="Verbose output during sprite and CSS generation.")
         parser.add_option("-f", "--stop", action="store_true", default=False, dest="stop", help="Stop if PIL fails to open an image file, normal operation is simply skipping files that can't be opened.")
+        parser.add_option("-o", "--nooverview", action="store_false", default=True, dest="overview", help="HTML overview file will be created if this option is set. The file is named overview.html and written in current directory.")
         # Group for CSS options
         cssGroup = OptionGroup(parser, "CSS options")
         cssGroup.add_option("-c", "--css", dest="css", default="sprite.css", help="Name of the CSS file. (Default: sprite.css)")
@@ -63,6 +65,7 @@ class SpritifyConfiguration(object):
         (options, arguments) = parser.parse_args()
         self.verbose = options.verbose
         self.stop = options.stop
+        self.writeHtmlOverview = options.overview
         self.cssfilename = os.path.abspath(os.path.expanduser(options.css))
         self.cssClassname = options.classname
         self.cssimagepath = options.cssimagepath
@@ -277,7 +280,8 @@ class Spritify(object):
         self._drawLayout(layout)
         cssClasses = self._writeCSS(layout)
         print "Classes in the CSS", cssClasses
-        self._writeHtml(cssClasses)
+        if self.__conf.writeHtmlOverview:
+            self._writeHtml(cssClasses)
 
 if __name__ == '__main__':
     conf = SpritifyConfiguration()
