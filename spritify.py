@@ -38,8 +38,7 @@ class SpritifyConfiguration(object):
         """
         usage = """usage: %prog [options] directory"""
         version = """%prog 0.1"""
-        description = """Create a sprint and a corresponding CSS file from images in the directory argument. 
-                         If the directory isn't supplied the current directory will be used."""
+        description = """Create a sprint and a corresponding CSS file from images in the directory argument. If the directory isn't supplied the current directory will be used."""
         parser = OptionParser(usage = usage, version=version, description=description)
         parser.add_option("-v", "--verbose", action="store_true", default=False, dest="verbose", help="Verbose output during sprite and CSS generation.")
         parser.add_option("-f", "--stop", action="store_true", default=False, dest="stop", help="Stop if PIL fails to open an image file, normal operation is simply skipping files that can't be opened.")
