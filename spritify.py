@@ -239,7 +239,7 @@ class Spritify(object):
         basename = os.path.basename(filename)
         match = re.search("""^[^\.]+""", basename)
         if(match is None):
-            return "somedafault"
+            return "somedefault"
         else:
             return match.group(0)
 
