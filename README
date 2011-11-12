@@ -56,6 +56,21 @@ Options:
     -s SPRITE, --sprite=SPRITE
                         Name of the sprite file. (Default: sprite.png)
 
+
+===
+FAQ
+===
+FAQ style list of how different things work in the script.
+
+Q: Should image files be named in a special way?
+
+A: Not really, but because the file name is used as the class name in the generated CSS file, it helps to name them the same way you would name the classes in a manually generated CSS file. Generally just name your images with a descriptive name and it'll be easier to use. It should be notet that spaces in file names is replaced with a dash so at file names sports icon.png would give the class name sports-icon.
+
+
+Q: What happens to files with the same name but different extensions in the same directory?
+
+A: Only one of the files would be added to the list of files to include in the sprite. For instance if a directory contains the files icon.gif and icon.png only icon.gif would be included. The check is done on the full path and would only filter one of them out, if the files where in the same directory. If the files are in different directories they would both be included in the sprite. 
+
 ============
 Testing sets
 ============

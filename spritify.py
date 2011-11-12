@@ -101,7 +101,6 @@ class SpritifyConfiguration(object):
         if(0 == len(self.imagefiles)):
             parser.error(str.format("No image files found in {0}", self.directory))
 
-
     def _imagefiles(self, directory):
         """
         Traverse the directory and get a list of all images in the directory tree.
@@ -109,12 +108,18 @@ class SpritifyConfiguration(object):
         something other that None will be included in the image file list.
         """
         imagefiles = []
+        imagefilesnoext = []
         for root, dirs, files in os.walk(directory):
             for filename in files:
                 absfilename = os.path.join(root, filename);
                 imagetype = imghdr.what(absfilename)
                 if not None is imagetype:
-                    imagefiles.append(absfilename)
+                    (noextension, extension) = os.path.splitext(absfilename)
+                    if noextension in imagefilesnoext:
+                        print str.format("File [{0}] already exists with another extension, skipping the file", absfilename)
+                    else:
+                        imagefiles.append(absfilename)
+                        imagefilesnoext.append(noextension)
         return imagefiles
 
 
@@ -231,7 +236,7 @@ class Spritify(object):
         sprite.save(self.__conf.spriteFilename, "PNG")
 
 
-    def _spriteClassFromNode(self, node):
+    def _spriteClassFromNode(self, node, existing):
         """
         Get a sprite class name from a node.
         """
@@ -239,9 +244,14 @@ class Spritify(object):
         basename = os.path.basename(filename)
         match = re.search("""^[^\.]+""", basename)
         if(match is None):
-            return "somedefault"
+            classname = "somedefault"
         else:
-            return match.group(0)
+            classname = match.group(0)
+        # No spaces allowed in class names
+        classname = classname.replace(" ", "-")
+        if classname in existing:
+            print "Already a class named", classname
+        return classname
 
 
     def _writeCSS(self, layout):
@@ -255,7 +265,7 @@ class Spritify(object):
         # Register the images as classes by there filenames
         cssClasses = []
         for node in layout.nodes():
-            name = self._spriteClassFromNode(node)
+            name = self._spriteClassFromNode(node, cssClasses)
             cssClasses.append(name)
             css.write(str.format(".{0} {{", name))
             css.write(str.format("width: {0}px; height: {1}px; ", node.width, node.height))
