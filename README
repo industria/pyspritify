@@ -1,14 +1,58 @@
 PySpritify
 
-Python script for creating a sprint and a CSS file from a directory containing images.
+Python script for creating a sprint and a CSS file from a directory tree containing images.
 
+The script traverses a directory tree looking for image types that it can read and queues them for inclusion in the sprite. Next the sprite size is calculated using rectangle packing to get a dense sprite layout. Then the sprite is generated with a corresponding CSS file with class names generated from the filenames.
 
 =============
 Prerequisites
 =============
+Prerequisites for running PySpritefy is:
 
 - Python version 2.7.1 (only tested on this version and might run on earlier versions)
 - Python Imaging Library (PIL, http://www.pythonware.com/products/pil/)
+
+=================
+Creating a sprite
+=================
+The simplest way to create a CSS sprite from a directory tree is by using the command:
+
+python spritify.py /your/image/directory
+
+This will generate a PNG names sprite.png containing the images packed into a sprite, a CSS file named sprite.css and a HTML file named overview.html containing a div per image inserted into the sprite.
+
+A lot of the default options can be adjustes using options to the script, which is shown by running the script with --help option. The options are shown below for quick reference: 
+
+python spritify.py --help
+Usage: spritify.py [options] directory
+
+Create a sprint and a corresponding CSS file from images in the directory
+argument.                           If the directory isn't supplied the
+current directory will be used.
+
+Options:
+  --version             show program's version number and exit
+  -h, --help            show this help message and exit
+  -v, --verbose         Verbose output during sprite and CSS generation.
+  -f, --stop            Stop if PIL fails to open an image file, normal
+                        operation is simply skipping files that can't be
+                        opened.
+
+  CSS options:
+    -c CSS, --css=CSS   Name of the CSS file. (Default: sprite.css)
+    -n CLASSNAME, --classname=CLASSNAME
+                        Name of the CSS class defining the background url.
+                        Don't prefix the classname with a period that is done
+                        by the CSS writer. (Default: sprite)
+    -p CSSIMAGEPATH, --cssimagepath=CSSIMAGEPATH
+                        Path to prefix the sprite name with in the background-
+                        image url. Should be used if the sprite and CSS files
+                        are not written to the same directory.
+
+  Sprite options:
+    -s SPRITE, --sprite=SPRITE
+                        Name of the sprite file. (Default: sprite.png)
+
 
 
 
