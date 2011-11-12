@@ -259,7 +259,9 @@ class Spritify(object):
         html.write(str.format("<link rel=\"stylesheet\" type=\"text/css\" href=\"{0}\" />", self.__conf.cssfilename))
         html.write("</head><body>")
         for cssClass in cssClasses:
+            html.write(str.format("<div>{0} {1}</div>\n", self.__conf.cssClassname, cssClass))
             html.write(str.format("<div class=\"{0} {1}\"></div>\n", self.__conf.cssClassname, cssClass))
+            html.write("<hr>\n")
         html.write("""</body></html>""")
         html.close()
 

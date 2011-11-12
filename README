@@ -24,11 +24,10 @@ This will generate a PNG names sprite.png containing the images packed into a sp
 A lot of the default options can be adjustes using options to the script, which is shown by running the script with --help option. The options are shown below for quick reference: 
 
 python spritify.py --help
+
 Usage: spritify.py [options] directory
 
-Create a sprint and a corresponding CSS file from images in the directory
-argument.                           If the directory isn't supplied the
-current directory will be used.
+Create a sprint and a corresponding CSS file from images in the directory argument. If the directory isn't supplied the current directory will be used.
 
 Options:
   --version             show program's version number and exit
@@ -52,11 +51,6 @@ Options:
   Sprite options:
     -s SPRITE, --sprite=SPRITE
                         Name of the sprite file. (Default: sprite.png)
-
-
-
-
-
 
 
 ============
