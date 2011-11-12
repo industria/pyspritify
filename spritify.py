@@ -202,8 +202,6 @@ class Spritify(object):
             layout.insert(image.width, image.height, image)
         layout.prune()
         return layout
-        (actual_width, actial_height) = layout.bounding()
-
 
     def _drawLayout(self, layout):
         """
